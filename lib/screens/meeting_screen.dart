@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:location/location.dart';
+import 'package:location_geocoder/location_geocoder.dart';
 
 class MeetingScreen extends StatefulWidget {
   const MeetingScreen({super.key});
@@ -73,10 +74,25 @@ class _MeetingScreenState extends State<MeetingScreen> {
 
                               _locationData = await location.getLocation();
                               // _locationData.
-                              locationController.text =
-                                  _locationData.latitude.toString() +
-                                      " " +
-                                      _locationData.longitude.toString();
+                              // locationController.text =
+                              //     _locationData.latitude.toString() +
+                              //         " " +
+                              //         _locationData.longitude.toString();
+                              const _apiKey = "";
+                              late LocatitonGeocoder geocoder =
+                                  LocatitonGeocoder(_apiKey);
+
+                              ///converts `coordinates` to actual `address` using google map api
+                              try {
+                                final address = await geocoder
+                                    .findAddressesFromCoordinates(Coordinates(
+                                        _locationData.latitude,
+                                        _locationData.longitude));
+                                locationController.text =
+                                    address.first.addressLine!;
+                              } catch (e) {
+                                rethrow;
+                              }
                             },
                             icon: Icon(Icons.location_on),
                           ),
